@@ -1,0 +1,24 @@
+name: Validar HTML # Nombre del workflow
+
+on: # Define cuando se ejecuta la GitHub Action
+  push: # Se ejecuta cada vez que se hace push
+    branches: [main] # Solo se ejecuta en la rama main
+
+jobs: # Conjunto de trabajos que se ejecutan en esta action
+  build: # Nombre del job
+    runs-on: ubuntu-latest # Maquina virtual donde se ejecuta (Linux)
+    steps: # Pasos a ejecutar
+      - name: Descargar repositorio
+        uses: actions/checkout@v4 # Descarga el codigo del repositorio para poder validarlo
+
+      - name: Validar todos los archivos HTML
+        run: |
+          for file in *.html; do
+            echo "Validando $file..."
+
+            grep -q "<!DOCTYPE html>" "$file" || (echo "Falta DOCTYPE en $file" && exit 1)
+            grep -q "<html" "$file" || (echo "Falta etiqueta <html> en $file" && exit 1)
+            grep -q "</html>" "$file" || (echo "Falta cierre </html> en $file" && exit 1)
+          done
+
+          echo "Todos los archivos HTML son validos"
