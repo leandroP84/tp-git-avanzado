@@ -1,0 +1,27 @@
+name: Validar HTML
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Validar todos los archivos HTML
+        run: |
+          for file in *.html; do
+            echo "Validando $file..."
+
+            grep -q "<!DOCTYPE html>" "$file" || (echo "Falta DOCTYPE en $file" && exit 1)
+            grep -q "<html" "$file" || (echo "Falta etiqueta <html> en $file" && exit 1)
+            grep -q "</html>" "$file" || (echo "Falta cierre </html> en $file" && exit 1)
+
+          done
+
+          echo "Todos los archivos HTML son validos"
